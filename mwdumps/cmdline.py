@@ -2,14 +2,15 @@
 
 Usage:
     cmdline --wiki=<wiki_name> [--date=<date>]
-        [--config=<config_file>] <output_path>
+        [--config=<config_file>] [--verbose] <output_path>
     cmdline (-h | --help)
 Options:
     --config=<config_file>       Configuration file containing a set of regexes,
                                     one per line, that matches dump files to be
                                     downloaded.
     --wiki=<wiki_name>           Abbreviation for wiki of interest
-    --date=<date>                Get dump on <date>, format YYYYMMDD
+    --date=<date>                Get dump on <date>. Defaults to most recent.
+    -v, --verbose                    Generate verbose output
 """
 from docopt import docopt
 import dumps
@@ -17,6 +18,7 @@ import downloader
 from dateutil import parser
 import os.path
 import os
+import logging
 
 
 def _parse_config_file(filepath):
@@ -37,6 +39,8 @@ def _download_matching_dump_files(wiki, date, regexes, output_path):
 
 
 def main(args):
+    if args['--verbose']:
+        logging.basicConfig(level=logging.INFO)
     date = None
     if args['--date'] is not None:
         date = parser.parse(args['--date'])

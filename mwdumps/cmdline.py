@@ -13,8 +13,8 @@ Options:
     -v, --verbose                    Generate verbose output
 """
 from docopt import docopt
-import dumps
-import downloader
+from . import dumps
+from . import downloader
 from dateutil import parser
 import os.path
 import os

@@ -1,16 +1,17 @@
 """cmdline
 
 Usage:
-    cmdline --wiki=<wiki_name> [--date=<date>]
+    cmdline --wiki=<wiki_name> [--date=<date>] [--threads=<threads>]
         [--config=<config_file>] [--verbose] <output_path>
     cmdline (-h | --help)
 Options:
     --config=<config_file>       Configuration file containing a set of regexes,
                                     one per line, that matches dump files to be
                                     downloaded.
-    --wiki=<wiki_name>           Abbreviation for wiki of interest
+    --wiki=<wiki_name>           Abbreviation for wiki of interest.
     --date=<date>                Get dump on <date>. Defaults to most recent.
-    -v, --verbose                    Generate verbose output
+    --threads=<threads>          Number of parallel downloads [default: 3].
+    -v, --verbose                Generate verbose output.
 """
 from docopt import docopt
 from . import dumps
@@ -26,7 +27,7 @@ def _parse_config_file(filepath):
         return [line.strip() for line in f]
 
 
-def _download_matching_dump_files(wiki, date, regexes, output_path):
+def _download_matching_dump_files(wiki, date, threads, regexes, output_path):
     date_str = date.strftime('%Y%m%d')
     full_path_url_map = {}
     full_output_dir = os.path.join(output_path, wiki, date_str)
@@ -35,7 +36,7 @@ def _download_matching_dump_files(wiki, date, regexes, output_path):
     file_url_map = dumps.get_dump_file_urls(wiki, date, regexes)
     for filename, url in file_url_map.items():
         full_path_url_map[os.path.join(full_output_dir, filename)] = url
-    downloader.download_files_in_map(full_path_url_map)
+    downloader.download_files_in_map(full_path_url_map, threads)
 
 
 def main(args):
@@ -51,6 +52,7 @@ def main(args):
         regexes = _parse_config_file(args['--config'])
     _download_matching_dump_files(args['--wiki'],
                                   date,
+                                  int(args['--threads']),
                                   regexes,
                                   args['<output_path>'])
 

@@ -14,12 +14,11 @@ Options:
     -v, --verbose                Generate verbose output.
 """
 from docopt import docopt
-from . import dumps
-from . import downloader
 from dateutil import parser
 import os.path
 import os
 import logging
+from .dump import Dump
 
 
 def _parse_config_file(filepath):
@@ -27,34 +26,37 @@ def _parse_config_file(filepath):
         return [line.strip() for line in f]
 
 
-def _download_matching_dump_files(wiki, date, threads, regexes, output_path):
+def _get_full_output_dir_path(base_output_dir, wiki, date):
     date_str = date.strftime('%Y%m%d')
-    full_path_url_map = {}
-    full_output_dir = os.path.join(output_path, wiki, date_str)
-    if not os.path.exists(full_output_dir):
-        os.makedirs(full_output_dir)
-    file_url_map = dumps.get_dump_file_urls(wiki, date, regexes)
-    for filename, url in file_url_map.items():
-        full_path_url_map[os.path.join(full_output_dir, filename)] = url
-    downloader.download_files_in_map(full_path_url_map, threads)
+    return os.path.join(base_output_dir, wiki, date_str)
+
+
+def _make_output_dir(output_path):
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
 
 
 def main(args):
     if args['--verbose']:
         logging.basicConfig(level=logging.INFO)
+    wiki = args['--wiki']
     date = None
     if args['--date'] is not None:
         date = parser.parse(args['--date'])
-    else:
-        date = dumps.most_recent_completed_dump_date_for(args['--wiki'])
+
     regexes = ['.*']
     if args['--config'] is not None:
         regexes = _parse_config_file(args['--config'])
-    _download_matching_dump_files(args['--wiki'],
-                                  date,
-                                  int(args['--threads']),
-                                  regexes,
-                                  args['<output_path>'])
+
+    wikidump = Dump(wiki=wiki, date=date)
+    full_output_dir = _get_full_output_dir_path(
+        args['<output_path>'], wikidump.wiki, wikidump.date
+    )
+    _make_output_dir(full_output_dir)
+
+    wikidump.download(
+        full_output_dir, matching=regexes, threads=int(args['--threads'])
+    )
 
 
 if __name__ == '__main__':

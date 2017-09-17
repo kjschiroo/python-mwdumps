@@ -2,14 +2,12 @@
 
 ## install ##
 ```
-git clone https://github.com/kjschiroo/python-mwdumps.git
-cd python-mwdumps
-python3 setup.py install
+pip3 install mwdumps
 ```
 
 ## usage ##
 ```
-> python3 -m mwdumps.cmdline
+> mwdumps
 Usage:
     mwdumps --wiki=<wiki_name> [--date=<date>] [--threads=<threads>]
         [--config=<config_file>] [--verbose] <output_path>

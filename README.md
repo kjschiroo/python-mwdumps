@@ -11,9 +11,9 @@ python3 setup.py install
 ```
 > python3 -m mwdumps.cmdline
 Usage:
-    cmdline --wiki=<wiki_name> [--date=<date>] [--threads=<threads>]
+    mwdumps --wiki=<wiki_name> [--date=<date>] [--threads=<threads>]
         [--config=<config_file>] [--verbose] <output_path>
-    cmdline (-h | --help)
+    mwdumps (-h | --help)
 Options:
     --config=<config_file>       Configuration file containing a set of regexes,
                                     one per line, that matches dump files to be

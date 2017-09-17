@@ -10,5 +10,10 @@ setup(
     license='MIT',
 
     packages=['mwdumps'],
-    install_requires=['docopt', 'beautifulsoup4', 'python-dateutil', 'requests']
+    entry_points = {
+        'console_scripts': ['mwdumps=mwdumps.cmdline:main'],
+    },
+    install_requires=[
+        'docopt', 'beautifulsoup4', 'python-dateutil', 'requests'
+    ]
 )
